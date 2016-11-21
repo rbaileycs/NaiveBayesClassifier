@@ -56,14 +56,19 @@ module Bayes
           data = data.drop(1)
         end
         (0...data.size).each { |index| yield data[index] }
-      end
+    end
+
+    def classify(text)
+
+    end
   end
 
   # Main logic goes here
   classifier = Naive.new
   classifier.initialize_attributes
   classifier.training_parse('/Users/dev/Documents/School/training.csv')
-  puts classifier.training_model.each_pair { |k, v| puts "Key: #{k}, Value: #{v}" }
+  classifier.classify('testdata.csv')
+    #puts classifier.training_model.each_pair { |k, v| puts "Key: #{k}, Value: #{v}" }
 
 end
 
