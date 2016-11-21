@@ -17,7 +17,7 @@ module Bayes
   #
   # end
 
-# Naive extends Base
+  # Naive extends Base
   class Naive #< Bayes::Base
 
     # Create attribute accessors, similar to get and set in Java
@@ -43,7 +43,7 @@ module Bayes
     # This function handles the initial parsing of the
     # training data.
     def training_parse(file)
-      CSV.foreach(file, :encoding =>'iso-8859-1') { |row|
+      CSV.foreach(file, :encoding => 'iso-8859-1') { |row|
         category = row[0]
         text = row[5] # discard the label
         train category, text
@@ -52,11 +52,11 @@ module Bayes
 
     # Tokenize the initial parsing into separate words
     def tokenize(data)
-        data = data.split(/\W+/)
-        if data.first == ''
-          data = data.drop(1)
-        end
-        (0...data.size).each { |index| yield data[index] }
+      data = data.split(/\W+/)
+      if data.first == ''
+        data = data.drop(1)
+      end
+      (0...data.size).each { |index| yield data[index] }
     end
 
     # This function classifies the test data in context of
@@ -65,14 +65,14 @@ module Bayes
       # Logic for the classify class goes here
     end
 
-  end  #end of Naive class
+  end #end of Naive class
 
   # Main logic goes here
   classifier = Naive.new
   classifier.initialize_attributes
   classifier.training_parse('path/to/training/file')
   classifier.classify('path/to/testing/file')
-    #puts classifier.training_model.each_pair { |k, v| puts "Key: #{k}, Value: #{v}" }
+  #puts classifier.training_model.each_pair { |k, v| puts "Key: #{k}, Value: #{v}" }
 
 end #end of Bayes module
 
