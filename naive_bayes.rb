@@ -23,12 +23,13 @@ module Bayes
     # Create attribute accessors, similar to get and set in Java
     attr_accessor :training_model, :classes
 
+    # This function creates a new Hash object and a new Set object.
+    # The hash object is for storing the values of the training data
+    # along with their keys (which are just their class types).
+    # The set object stores the different classes.
     def initialize_attributes
-      # creates a new Hash object, where the hash value and key
-      # value are used in the invocation of a block
       @training_model = Hash.new { |h, k| h[k] = Hash.new(0) }
       @classes = Set.new
-      #super # super call to class Bayes initialize_attributes
     end
 
     # This function trains the program by creating classes and
@@ -58,10 +59,13 @@ module Bayes
         (0...data.size).each { |index| yield data[index] }
     end
 
+    # This function classifies the test data in context of
+    # the training data
     def classify(text)
-
+      # Logic for the classify class goes here
     end
-  end
+
+  end  #end of Naive class
 
   # Main logic goes here
   classifier = Naive.new
@@ -70,5 +74,5 @@ module Bayes
   classifier.classify('path/to/testing/file')
     #puts classifier.training_model.each_pair { |k, v| puts "Key: #{k}, Value: #{v}" }
 
-end
+end #end of Bayes module
 
