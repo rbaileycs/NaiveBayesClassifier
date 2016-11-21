@@ -49,7 +49,7 @@ module Bayes
       }
     end
 
-    # Tokenizes the initial parsing into separate words
+    # Tokenize the initial parsing into separate words
     def tokenize(data)
         data = data.split(/\W+/)
         if data.first == ''
@@ -66,8 +66,8 @@ module Bayes
   # Main logic goes here
   classifier = Naive.new
   classifier.initialize_attributes
-  classifier.training_parse('/Users/dev/Documents/School/training.csv')
-  classifier.classify('testdata.csv')
+  classifier.training_parse('path/to/training/file')
+  classifier.classify('path/to/testing/file')
     #puts classifier.training_model.each_pair { |k, v| puts "Key: #{k}, Value: #{v}" }
 
 end
