@@ -21,7 +21,8 @@ module Bayes
   class Naive #< Bayes::Base
 
     # Create attribute accessors, similar to get and set in Java
-    attr_accessor :training_model, :classes
+    attr_accessor :training_model, :classes, :category, :text,
+                  :negative_population, :neutral_population, :positive_population
 
     # This function creates a new Hash object and a new Set object.
     # The hash object is for storing the values of the training data
@@ -37,18 +38,27 @@ module Bayes
     # values (associated strings).
     def train(category, data)
       @classes << category.to_sym
-      tokenize(data) { |data| @training_model[category.to_sym][data] += 1 }
+      tokenize(data) { |data| @training_model[data][category.to_sym] += 1 }
     end
 
     # This function handles the initial parsing of the
     # training data.
     def training_parse(file)
       CSV.foreach(file, :encoding => 'iso-8859-1') { |row|
-        category = row[0]
-        text = row[5] # discard the label
-        train category, text
+        @category = row[0]
+        @text = row[5]
+        train @category, @text
       }
     end
+
+    def classy_parse(file)
+      CSV.foreach(file, :encoding => 'iso-8859-1') { |row|
+        @text = row[5]
+        data = @text.split(/\W+/)
+        classify(data)
+      }
+    end
+
 
     # Tokenize the initial parsing into separate words
     def tokenize(data)
@@ -62,7 +72,27 @@ module Bayes
     # This function classifies the test data in context of
     # the training data
     def classify(text)
-      # Logic for the classify class goes here
+
+
+    puts text
+
+
+
+
+
+
+
+
+
+
+    end
+
+    def find_instances(str)
+      x = @training_model.detect {|k,v| k== str}[1]
+      @negative_population =x[:'0']
+      @neutral_population = x[:'2']
+      @positive_population = x[:'4']
+
     end
 
   end #end of Naive class
@@ -70,9 +100,40 @@ module Bayes
   # Main logic goes here
   classifier = Naive.new
   classifier.initialize_attributes
-  classifier.training_parse('path/to/training/file')
-  classifier.classify('path/to/testing/file')
-  #puts classifier.training_model.each_pair { |k, v| puts "Key: #{k}, Value: #{v}" }
+  classifier.training_parse('testdata.csv')
+  classifier.classy_parse('testdata.csv')
+  classifier.classify('testdata.csv')
+  #classifier.training_model.each_pair { |k, v| puts "Key: #{k}, Value: #{v}" }
+  classifier.find_instances('Fuck')
+
 
 end #end of Bayes module
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
