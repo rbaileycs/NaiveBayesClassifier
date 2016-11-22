@@ -55,6 +55,7 @@ module Bayes
         @text = row[5]
         train @category, @text
       }
+      get_poopulation
     end
 
     def classy_parse(file)
@@ -78,9 +79,16 @@ module Bayes
     # This function classifies the test data in context of
     # the training data
     def classify(text)
-      data = text.split(/\W+/)
-      for index in 0...data.size
-          find_instances(data[index])
+      posVal = 0
+      negVal = 0
+      newtVal = 0
+
+      word = text.split(/\W+/)
+      for index in 0...word.size
+        find_instances(word[index])
+        #posVal *= (word[index]@positive_polarity/total)*(/(positive_polarity + negative_polarity + neutral_polarity)/total_population)
+        #negVal += ()
+        #newtVal += ()
       end
     rescue
       1
@@ -89,19 +97,38 @@ module Bayes
     end
 
     def find_instances(str)
-      @negative_polarity = @training_model.detect {|k,v| k== str}[1][:'0']
-      @neutral_polarity = @training_model.detect {|k,v| k== str}[1][:'2']
-      @positive_polarity = @training_model.detect {|k,v| k== str}[1][:'4']
+      if @training_model.detect {|k,v| k== str}[1][:'0'] != 0
+        @negative_polarity = @training_model.detect {|k,v| k== str}[1][:'0']
+      else
+        @negative_polarity = 0.00000000001
+        end
+      if @training_model.detect {|k,v| k== str}[1][:'2'] != 0
+        @neutral_polarity = @training_model.detect {|k,v| k== str}[1][:'2']
+      else
+        @neutral_polarity = 0.00000000001
+        end
+      if @training_model.detect {|k,v| k== str}[1][:'4'] != 0
+        @positive_polarity = @training_model.detect {|k,v| k== str}[1][:'4']
+      else
+        @positive_polarity = 0.00000000001
+      end
     end
 
     def get_poopulation()
       @training_model.each_pair { |k,v| k
       @negative_population += v[:'0']
-      @positive_population += v[:'2']
-      @neutral_population += v[:'4']
+      @positive_population += v[:'4']
+      @neutral_population += v[:'2']
       }
 
     end
+
+
+    def word_pop()
+      (@negative_polarity + @positive_population + @neutral_polarity) / @total_words_counter
+    end
+
+
 
   end #end of Naive class
 
@@ -109,11 +136,10 @@ module Bayes
   classifier = Naive.new
   classifier.initialize_attributes
   classifier.training_parse('testdata.csv')
+  #puts classifier.find_instances('Fuck')
   classifier.classy_parse('testdata.csv')
-  classifier.get_poopulation
 
-  puts classifier.negative_population + classifier.neutral_population + classifier.positive_population
-  puts classifier.total_words_counter
+
   #puts classifier.training_model #.each_pair { |k, v| puts "Key: #{k}, Value: #{v}" }
 
 
