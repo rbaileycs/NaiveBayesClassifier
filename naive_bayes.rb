@@ -9,10 +9,9 @@ module Bayes
   class Trainer
 
     # Create attribute accessors, similar to get and set in Java
-    attr_accessor :training_model, :classes, :category, :text,
+    attr_accessor :training_model, :classes, :category, :text, :total_words_counter,
                   :negative_population, :neutral_population, :positive_population,
-                  :negative_polarity, :positive_polarity, :neutral_polarity,
-                  :total_words_counter
+                  :negative_polarity, :positive_polarity, :neutral_polarity
 
     # This function creates a new Hash object and a new Set object.
     # The hash object is for storing the values of the training data
@@ -48,7 +47,7 @@ module Bayes
 
     # Tokenize the initial parsing into separate words
     def tokenize(data)
-      return if data.nil? == true
+      return if data.nil?
       data = data.split(/\W+/)
       if data.first == ''
         data = data.drop(1)
@@ -93,23 +92,23 @@ module Bayes
       positive_value, neutral_value, negative_value = 1
       word = text.split(/\W+/)
       word = word.drop(1) if word.first == ''
-      word.each_with_index { |v, i|
+      word.each_with_index { |_, i|
         find_instances(word[i])
         positive_value *= ((((positive_polarity.to_f/positive_population.to_f).to_f) *((positive_polarity).to_f))/word_pop)
         negative_value *= ((((negative_polarity.to_f/negative_population.to_f).to_f)*((negative_polarity).to_f))/word_pop)
         neutral_value *= ((((neutral_polarity.to_f/neutral_population.to_f).to_f)*((neutral_polarity).to_f))/word_pop)
       }
-      if [positive_value, neutral_value, negative_value].rindex([positive_value, neutral_value, negative_value].max()) == 0
+      if [positive_value, neutral_value, negative_value].rindex([positive_value, neutral_value, negative_value].max) == 0
         @total_positives +=1
         @tots += 1
         puts "POS: #{total_positives}"
       end
-      if [positive_value, neutral_value, negative_value].rindex([positive_value, neutral_value, negative_value].max()) == 1
+      if [positive_value, neutral_value, negative_value].rindex([positive_value, neutral_value, negative_value].max) == 1
         @total_neutrals += 1
         @tots += 1
         puts "NEU: #{total_neutrals}"
       end
-      if [positive_value, neutral_value, negative_value].rindex([positive_value, neutral_value, negative_value].max()) == 2
+      if [positive_value, neutral_value, negative_value].rindex([positive_value, neutral_value, negative_value].max) == 2
         @total_negatives +=1
         @tots += 1
         puts "NEG: #{total_negatives}"
@@ -120,25 +119,16 @@ module Bayes
     end
 
     def find_instances(str)
-      if @training_model.detect { |k, v| k== str }[1][:'0'] != 0
-        @negative_polarity = @training_model.detect { |k, v| k== str }[1][:'0']
-      else
-        @negative_polarity = 0.1
-      end
-      if @training_model.detect { |k, v| k== str }[1][:'2'] != 0
-        @neutral_polarity = @training_model.detect { |k, v| k== str }[1][:'2']
-      else
-        @neutral_polarity = 0.1
-      end
-      if @training_model.detect { |k, v| k== str }[1][:'4'] != 0
-        @positive_polarity = @training_model.detect { |k, v| k== str }[1][:'4']
-      else
-        @positive_polarity = 0.1
-      end
+      (@training_model.detect { |k, _| k== str }[1][:'0'] != 0) ?
+          @negative_polarity = @training_model.detect { |k, _| k== str }[1][:'0'] : @negative_polarity = 0.1
+      (@training_model.detect { |k, _| k== str }[1][:'2'] != 0) ?
+          @neutral_polarity = @training_model.detect { |k, _| k== str }[1][:'2'] : @neutral_polarity = 0.1
+      (@training_model.detect { |k, _| k== str }[1][:'4'] != 0) ?
+          @positive_polarity = @training_model.detect { |k, _| k== str }[1][:'4'] : @positive_polarity = 0.1
     end
 
     def word_pop
-      (positive_polarity + negative_polarity + neutral_polarity).to_f/total_words_counter
+      (positive_polarity.to_f + negative_polarity.to_f + neutral_polarity.to_f).to_f/total_words_counter
     end
   end #end of Classifier class
 
@@ -146,7 +136,7 @@ module Bayes
   CLASSIFIER = Classifier.new
   CLASSIFIER.initialize_attributes
   CLASSIFIER.training_parse('training.csv')
-  #CLASSIFIER.classy_parse('testdata.csv')
+  CLASSIFIER.classy_parse('testdata.csv')
   #puts classifier.training_model #.each_pair { |k, v| puts "Key: #{k}, Value: #{v}" }
 
 end #end of Bayes module
