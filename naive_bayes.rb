@@ -100,19 +100,19 @@ module Bayes
         neutral_value *= ((((neutral_polarity.to_f/neutral_population.to_f).to_f)*((neutral_polarity).to_f))/word_pop)
       }
       if [positive_value, neutral_value, negative_value].rindex([positive_value, neutral_value, negative_value].max()) == 0
-        puts "That shit is positive yo"
         @total_positives +=1
         @tots += 1
+        puts "POS: #{total_positives}"
       end
       if [positive_value, neutral_value, negative_value].rindex([positive_value, neutral_value, negative_value].max()) == 1
-        puts "Shit, Bro I cant decide"
         @total_neutrals += 1
         @tots += 1
+        puts "NEU: #{total_neutrals}"
       end
       if [positive_value, neutral_value, negative_value].rindex([positive_value, neutral_value, negative_value].max()) == 2
-        puts "Thats negative as Fuck man...."
         @total_negatives +=1
         @tots += 1
+        puts "NEG: #{total_negatives}"
       end
     rescue
       1
