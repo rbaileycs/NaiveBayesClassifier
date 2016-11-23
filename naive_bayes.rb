@@ -103,21 +103,21 @@ module Bayes
       if [positive_value, neutral_value, negative_value].rindex([positive_value, neutral_value, negative_value].max) == 0
         @total_positives +=1
         @tots += 1
-        puts "POS: #{total_positives}"
+        #puts "POS: #{total_positives}"
       end
       if [positive_value, neutral_value, negative_value].rindex([positive_value, neutral_value, negative_value].max) == 1
         @total_neutrals += 1
         @tots += 1
-        puts "NEU: #{total_neutrals}"
+        #puts "NEU: #{total_neutrals}"
       end
       if [positive_value, neutral_value, negative_value].rindex([positive_value, neutral_value, negative_value].max) == 2
         @total_negatives +=1
         @tots += 1
-        puts "NEG: #{total_negatives}"
+        #puts "NEG: #{total_negatives}"
       end
     rescue => error
       puts error.backtrace
-      # puts "#{@total_positives} + #{negOut} + #{@total_neutrals} + #{tots}"
+
     end
 
     def find_instances(str)
@@ -145,8 +145,15 @@ module Bayes
   CLASSIFIER.initialize_attributes
   CLASSIFIER.training_parse('training.csv')
   CLASSIFIER.classy_parse('testdata.csv')
-  puts CLASSIFIER.tots
-  #puts CLASSIFIER.training_model.each_pair { |k, v| puts "Key: #{k}, Value: #{v}" }
+  COMPARISON = Classifier.new
+  COMPARISON.initialize_attributes
+  COMPARISON.training_parse('testdata.csv')
+  COMPARISON.classy_parse('testdata.csv')
+
+  x = (CLASSIFIER.total_positives.to_f/COMPARISON.total_positives.to_f)
+  y = (CLASSIFIER.total_negatives.to_f/COMPARISON.total_negatives.to_f)
+  z = (CLASSIFIER.total_neutrals.to_f/COMPARISON.total_neutrals.to_f)
+  puts " #{(x*y*z).round(3) * 100} % accuracy"
 
 end #end of Bayes module
 
