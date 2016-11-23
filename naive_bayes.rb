@@ -64,7 +64,6 @@ module Bayes
       @neutral_population += v[:'2']
       }
     end
-
   end #end of Trainer class
 
   class Classifier < Trainer
@@ -140,8 +139,7 @@ module Bayes
     def word_pop
       (positive_polarity + negative_polarity + neutral_polarity).to_f/total_words_counter
     end
-
-  end
+  end #end of Classifier class
 
   # Main logic goes here
   CLASSIFIER = Classifier.new
