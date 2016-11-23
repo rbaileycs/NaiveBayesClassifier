@@ -65,14 +65,13 @@ module Bayes
       }
     end
 
-  end #end of Train class
-
+  end #end of Trainer class
 
   class Classifier < Trainer
 
     attr_accessor :total_positives, :total_negatives, :total_neutrals, :tots
 
-    # This function
+    # This function initializes counters
     def initialize_attributes
       @total_positives = 0
       @total_negatives = 0
@@ -91,9 +90,7 @@ module Bayes
     # This function classifies the test data in context of
     # the training data
     def classify(text)
-
       positive_value, neutral_value, negative_value = 1
-
       word = text.split(/\W+/)
       word = word.drop(1) if word.first == ''
       word.each_with_index { |v, i|
@@ -102,7 +99,6 @@ module Bayes
         negative_value *= ((((negative_polarity.to_f/negative_population.to_f).to_f)*((negative_polarity).to_f))/word_pop)
         neutral_value *= ((((neutral_polarity.to_f/neutral_population.to_f).to_f)*((neutral_polarity).to_f))/word_pop)
       }
-
       if [positive_value, neutral_value, negative_value].rindex([positive_value, neutral_value, negative_value].max()) == 0
         puts "That shit is positive yo"
         @total_positives +=1
