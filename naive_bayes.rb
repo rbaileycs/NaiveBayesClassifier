@@ -25,10 +25,6 @@ module Bayes
       @negative_population= 0
       @neutral_population = 0
       @positive_population = 0
-      @total_positives = 0
-      @total_negatives = 0
-      @total_neutrals = 0
-      @tots= 0
     end
 
     # This function handles the initial parsing of the
