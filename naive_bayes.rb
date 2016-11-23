@@ -4,21 +4,9 @@ require 'set'
 # A module is a namespace and prevents name clashes
 module Bayes
 
-  # class Base #this is where the parser should go
-  #
-  #   attr_accessor :polarity, :text, :container_array
-  #
-  #   def initialize_attributes
-  #
-  #   end
-  #
-  #   #end terminates the class
-  #
-  #
-  # end
+  #It's just division - Michael Plaisance
 
-  # Naive extends Base
-  class Naive #< Bayes::Base
+  class Trainer
 
     # Create attribute accessors, similar to get and set in Java
     attr_accessor :training_model, :classes, :category, :text,
@@ -37,14 +25,10 @@ module Bayes
       @negative_population= 0
       @neutral_population = 0
       @positive_population = 0
-    end
-
-    # This function trains the program by creating classes and
-    # a hashmap that contains the keys(classes) and
-    # values (associated strings).
-    def train(category, data)
-      @classes << category.to_sym
-      tokenize(data) { |data| @training_model[data][category.to_sym] += 1 }
+      @total_positives = 0
+      @total_negatives = 0
+      @total_neutrals = 0
+      @tots= 0
     end
 
     # This function handles the initial parsing of the
@@ -55,14 +39,15 @@ module Bayes
         @text = row[5]
         train @category, @text
       }
-      get_poopulation
+      population
     end
 
-    def classy_parse(file)
-      CSV.foreach(file, :encoding => 'iso-8859-1') { |row|
-        @text = row[5]
-        classify(@text)
-      }
+    # This function trains the program by creating classes and
+    # a hashmap that contains the keys(classes) and
+    # values (associated strings).
+    def train(category, data)
+      @classes << category.to_sym
+      tokenize(data) { |data| @training_model[data][category.to_sym] += 1 }
     end
 
     # Tokenize the initial parsing into separate words
@@ -76,50 +61,70 @@ module Bayes
         yield data[index] }
     end
 
+    def population
+      @training_model.each_pair { |k, v| k
+      @negative_population += v[:'0']
+      @positive_population += v[:'4']
+      @neutral_population += v[:'2']
+      }
+    end
+
+  end #end of Train class
+
+
+  class Classifier < Trainer
+
+    attr_accessor :total_positives, :total_negatives, :total_neutrals, :tots
+
+    # This function
+    def initialize_attributes
+      @total_positives = 0
+      @total_negatives = 0
+      @total_neutrals = 0
+      @tots= 0
+      super
+    end
+
+    def classy_parse(file)
+      CSV.foreach(file, :encoding => 'iso-8859-1') { |row|
+        @text = row[5]
+        classify(@text)
+      }
+    end
+
     # This function classifies the test data in context of
     # the training data
     def classify(text)
 
-      posOut = 0
-      negOut = 0
-      newtOut = 0
-      tots= 0
-
-      posVal = 1
-      negVal=1
-      newtVal=1
-
+      positive_value, neutral_value, negative_value = 1
 
       word = text.split(/\W+/)
-      if word.first == ''
-        word = word.drop(1)
-      end
-      word.each_with_index{ |v,i|
+      word = word.drop(1) if word.first == ''
+      word.each_with_index { |v, i|
         find_instances(word[i])
-        posVal *= ((positive_polarity.to_f/positive_population.to_f).to_f)*((positive_polarity).to_f/(positive_polarity + negative_polarity + neutral_polarity)).to_f/total_words_counter #(word[index]@positive_polarity/total)*(/(positive_polarity + negative_polarity + neutral_polarity)/total_population)
-        negVal *= ((negative_polarity.to_f/negative_population.to_f).to_f)*((negative_polarity).to_f/(positive_polarity + negative_polarity + neutral_polarity)).to_f/total_words_counter
-        newtVal *= ((neutral_polarity.to_f/neutral_population.to_f).to_f)*((neutral_polarity).to_f/(positive_polarity + negative_polarity + neutral_polarity)).to_f/total_words_counter
+        positive_value *= ((((positive_polarity.to_f/positive_population.to_f).to_f) *((positive_polarity).to_f))/word_pop)
+        negative_value *= ((((negative_polarity.to_f/negative_population.to_f).to_f)*((negative_polarity).to_f))/word_pop)
+        neutral_value *= ((((neutral_polarity.to_f/neutral_population.to_f).to_f)*((neutral_polarity).to_f))/word_pop)
       }
 
-      if [posVal, newtVal, negVal].rindex([posVal, newtVal, negVal].max()) == 0
+      if [positive_value, neutral_value, negative_value].rindex([positive_value, neutral_value, negative_value].max()) == 0
         puts "That shit is positive yo"
-        posOut +=1
-        tots += 1
+        @total_positives +=1
+        @tots += 1
       end
-      if [posVal, newtVal, negVal].rindex([posVal, newtVal, negVal].max()) == 1
+      if [positive_value, neutral_value, negative_value].rindex([positive_value, neutral_value, negative_value].max()) == 1
         puts "Shit, Bro I cant decide"
-        newtOut += 1
-        tots += 1
+        @total_neutrals += 1
+        @tots += 1
       end
-      if [posVal, newtVal, negVal].rindex([posVal, newtVal, negVal].max()) == 2
+      if [positive_value, neutral_value, negative_value].rindex([positive_value, neutral_value, negative_value].max()) == 2
         puts "Thats negative as Fuck man...."
-        negOut +=1
-        tots += 1
+        @total_negatives +=1
+        @tots += 1
       end
     rescue
       1
-      #It's just division - Michael Plaisance
-    # puts posOut + " " + negOut + " " + newtOut + " " + tots
+      # puts "#{@total_positives} + #{negOut} + #{@total_neutrals} + #{tots}"
     end
 
     def find_instances(str)
@@ -140,33 +145,18 @@ module Bayes
       end
     end
 
-    def get_poopulation()
-      @training_model.each_pair { |k, v| k
-      @negative_population += v[:'0']
-      @positive_population += v[:'4']
-      @neutral_population += v[:'2']
-      }
-
+    def word_pop
+      (positive_polarity + negative_polarity + neutral_polarity).to_f/total_words_counter
     end
 
-
-    def word_pop()
-      (@negative_polarity + @positive_population + @neutral_polarity) / @total_words_counter
-    end
-
-
-  end #end of Naive class
+  end
 
   # Main logic goes here
-  classifier = Naive.new
-  classifier.initialize_attributes
-  classifier.training_parse('testdata.csv')
-  #puts classifier.find_instances('Fuck')
-  classifier.classy_parse('/Users/dev/Documents/School/training.csv')
-
-
+  CLASSIFIER = Classifier.new
+  CLASSIFIER.initialize_attributes
+  CLASSIFIER.training_parse('/Users/dev/Documents/School/CS354/Ruby/training.csv')
+  CLASSIFIER.classy_parse('/Users/dev/Documents/School/CS354/Ruby/testdata.csv')
   #puts classifier.training_model #.each_pair { |k, v| puts "Key: #{k}, Value: #{v}" }
-
 
 end #end of Bayes module
 
