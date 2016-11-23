@@ -42,12 +42,13 @@ module Bayes
     # a hashmap that contains the keys(classes) and
     # values (associated strings).
     def train(category, data)
-      @classes << category.to_sym
+      @classes << category.to_s
       tokenize(data) { |data| @training_model[data][category.to_sym] += 1 }
     end
 
     # Tokenize the initial parsing into separate words
     def tokenize(data)
+      return if data.nil? == true
       data = data.split(/\W+/)
       if data.first == ''
         data = data.drop(1)
@@ -113,8 +114,8 @@ module Bayes
         @tots += 1
         puts "NEG: #{total_negatives}"
       end
-    rescue
-      1
+    rescue => error
+      puts error.backtrace
       # puts "#{@total_positives} + #{negOut} + #{@total_neutrals} + #{tots}"
     end
 
@@ -144,8 +145,8 @@ module Bayes
   # Main logic goes here
   CLASSIFIER = Classifier.new
   CLASSIFIER.initialize_attributes
-  CLASSIFIER.training_parse('/Users/dev/Documents/School/CS354/Ruby/training.csv')
-  CLASSIFIER.classy_parse('/Users/dev/Documents/School/CS354/Ruby/testdata.csv')
+  CLASSIFIER.training_parse('training.csv')
+  #CLASSIFIER.classy_parse('testdata.csv')
   #puts classifier.training_model #.each_pair { |k, v| puts "Key: #{k}, Value: #{v}" }
 
 end #end of Bayes module
