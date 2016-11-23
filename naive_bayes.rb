@@ -153,7 +153,8 @@ module Bayes
   x = (CLASSIFIER.total_positives.to_f/COMPARISON.total_positives.to_f)
   y = (CLASSIFIER.total_negatives.to_f/COMPARISON.total_negatives.to_f)
   z = (CLASSIFIER.total_neutrals.to_f/COMPARISON.total_neutrals.to_f)
-  puts " #{(x*y*z).round(3) * 100} % accuracy"
+  puts "Classifictaion Complete with #{(x*y*z).round(3) * 100} % accuracy"
+
 
 end #end of Bayes module
 
