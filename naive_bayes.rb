@@ -89,7 +89,9 @@ module Bayes
     # This function classifies the test data in context of
     # the training data
     def classify(text)
-      positive_value, neutral_value, negative_value = 1
+      positive_value =1
+      neutral_value=1
+      negative_value = 1
       word = text.split(/\W+/)
       word = word.drop(1) if word.first == ''
       word.each_with_index { |_, i|
@@ -119,10 +121,16 @@ module Bayes
     end
 
     def find_instances(str)
+
+      if @training_model[str][0] == nil
+        @training_model[str][0] = 0
+        puts "WORD: #{@training_model[str][0] = 0}"
+      end
+
       (@training_model.detect { |k, _| k== str }[1][:'0'] != 0) ?
-          @negative_polarity = @training_model.detect { |k, _| k== str }[1][:'0'] : @negative_polarity = 0.1
+          @negative_polarity = @training_model.detect { |k, _| k== str }[1][:'0'] :  @negative_polarity = 0.1
       (@training_model.detect { |k, _| k== str }[1][:'2'] != 0) ?
-          @neutral_polarity = @training_model.detect { |k, _| k== str }[1][:'2'] : @neutral_polarity = 0.1
+          @neutral_polarity = @training_model.detect { |k, _| k== str }[1][:'2'] :  @neutral_polarity = 0.1
       (@training_model.detect { |k, _| k== str }[1][:'4'] != 0) ?
           @positive_polarity = @training_model.detect { |k, _| k== str }[1][:'4'] : @positive_polarity = 0.1
     end
@@ -137,7 +145,8 @@ module Bayes
   CLASSIFIER.initialize_attributes
   CLASSIFIER.training_parse('training.csv')
   CLASSIFIER.classy_parse('testdata.csv')
-  #puts classifier.training_model #.each_pair { |k, v| puts "Key: #{k}, Value: #{v}" }
+  puts CLASSIFIER.tots
+  #puts CLASSIFIER.training_model.each_pair { |k, v| puts "Key: #{k}, Value: #{v}" }
 
 end #end of Bayes module
 
