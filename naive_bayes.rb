@@ -79,43 +79,69 @@ module Bayes
     # This function classifies the test data in context of
     # the training data
     def classify(text)
-      posVal = 0
-      negVal = 0
-      newtVal = 0
+
+      posOut = 0
+      negOut = 0
+      newtOut = 0
+      tots= 0
+
+      posVal = 1
+      negVal=1
+      newtVal=1
+
 
       word = text.split(/\W+/)
-      for index in 0...word.size
-        find_instances(word[index])
-        #posVal *= (word[index]@positive_polarity/total)*(/(positive_polarity + negative_polarity + neutral_polarity)/total_population)
-        #negVal += ()
-        #newtVal += ()
+      if word.first == ''
+        word = word.drop(1)
+      end
+      word.each_with_index{ |v,i|
+        find_instances(word[i])
+        posVal *= ((positive_polarity.to_f/positive_population.to_f).to_f)*((positive_polarity).to_f/(positive_polarity + negative_polarity + neutral_polarity)).to_f/total_words_counter #(word[index]@positive_polarity/total)*(/(positive_polarity + negative_polarity + neutral_polarity)/total_population)
+        negVal *= ((negative_polarity.to_f/negative_population.to_f).to_f)*((negative_polarity).to_f/(positive_polarity + negative_polarity + neutral_polarity)).to_f/total_words_counter
+        newtVal *= ((neutral_polarity.to_f/neutral_population.to_f).to_f)*((neutral_polarity).to_f/(positive_polarity + negative_polarity + neutral_polarity)).to_f/total_words_counter
+      }
+
+      if [posVal, newtVal, negVal].rindex([posVal, newtVal, negVal].max()) == 0
+        puts "That shit is positive yo"
+        posOut +=1
+        tots += 1
+      end
+      if [posVal, newtVal, negVal].rindex([posVal, newtVal, negVal].max()) == 1
+        puts "Shit, Bro I cant decide"
+        newtOut += 1
+        tots += 1
+      end
+      if [posVal, newtVal, negVal].rindex([posVal, newtVal, negVal].max()) == 2
+        puts "Thats negative as Fuck man...."
+        negOut +=1
+        tots += 1
       end
     rescue
       1
       #It's just division - Michael Plaisance
-
+    # puts posOut + " " + negOut + " " + newtOut + " " + tots
     end
 
     def find_instances(str)
-      if @training_model.detect {|k,v| k== str}[1][:'0'] != 0
-        @negative_polarity = @training_model.detect {|k,v| k== str}[1][:'0']
+      if @training_model.detect { |k, v| k== str }[1][:'0'] != 0
+        @negative_polarity = @training_model.detect { |k, v| k== str }[1][:'0']
       else
-        @negative_polarity = 0.00000000001
-        end
-      if @training_model.detect {|k,v| k== str}[1][:'2'] != 0
-        @neutral_polarity = @training_model.detect {|k,v| k== str}[1][:'2']
+        @negative_polarity = 0.1
+      end
+      if @training_model.detect { |k, v| k== str }[1][:'2'] != 0
+        @neutral_polarity = @training_model.detect { |k, v| k== str }[1][:'2']
       else
-        @neutral_polarity = 0.00000000001
-        end
-      if @training_model.detect {|k,v| k== str}[1][:'4'] != 0
-        @positive_polarity = @training_model.detect {|k,v| k== str}[1][:'4']
+        @neutral_polarity = 0.1
+      end
+      if @training_model.detect { |k, v| k== str }[1][:'4'] != 0
+        @positive_polarity = @training_model.detect { |k, v| k== str }[1][:'4']
       else
-        @positive_polarity = 0.00000000001
+        @positive_polarity = 0.1
       end
     end
 
     def get_poopulation()
-      @training_model.each_pair { |k,v| k
+      @training_model.each_pair { |k, v| k
       @negative_population += v[:'0']
       @positive_population += v[:'4']
       @neutral_population += v[:'2']
@@ -129,7 +155,6 @@ module Bayes
     end
 
 
-
   end #end of Naive class
 
   # Main logic goes here
@@ -137,7 +162,7 @@ module Bayes
   classifier.initialize_attributes
   classifier.training_parse('testdata.csv')
   #puts classifier.find_instances('Fuck')
-  classifier.classy_parse('testdata.csv')
+  classifier.classy_parse('/Users/dev/Documents/School/training.csv')
 
 
   #puts classifier.training_model #.each_pair { |k, v| puts "Key: #{k}, Value: #{v}" }
