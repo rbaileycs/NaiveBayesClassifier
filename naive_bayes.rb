@@ -96,9 +96,9 @@ module Bayes
       word = word.drop(1) if word.first == ''
       word.each_with_index { |_, i|
         find_instances(word[i])
-        positive_value *= ((((positive_polarity.to_f/positive_population.to_f).to_f) *((positive_polarity).to_f))/word_pop)
-        negative_value *= ((((negative_polarity.to_f/negative_population.to_f).to_f)*((negative_polarity).to_f))/word_pop)
-        neutral_value *= ((((neutral_polarity.to_f/neutral_population.to_f).to_f)*((neutral_polarity).to_f))/word_pop)
+        positive_value *= ((((positive_polarity.to_f/positive_population.to_f).to_f) * ((positive_polarity).to_f))/word_pop)
+        negative_value *= ((((negative_polarity.to_f/negative_population.to_f).to_f) * ((negative_polarity).to_f))/word_pop)
+        neutral_value *= ((((neutral_polarity.to_f/neutral_population.to_f).to_f) * ((neutral_polarity).to_f))/word_pop)
       }
       if [positive_value, neutral_value, negative_value].rindex([positive_value, neutral_value, negative_value].max) == 0
         @total_positives +=1
@@ -149,11 +149,11 @@ module Bayes
   COMPARISON.initialize_attributes
   COMPARISON.training_parse('testdata.csv')
   COMPARISON.classy_parse('testdata.csv')
-
-  x = (CLASSIFIER.total_positives.to_f/COMPARISON.total_positives.to_f)
-  y = (CLASSIFIER.total_negatives.to_f/COMPARISON.total_negatives.to_f)
-  z = (CLASSIFIER.total_neutrals.to_f/COMPARISON.total_neutrals.to_f)
-  puts "Classifictaion Complete with #{(x*y*z).round(3) * 100} % accuracy"
+  x = (CLASSIFIER.total_positives.to_f-COMPARISON.total_positives.to_f).abs/COMPARISON.total_positives.to_f
+  y = (CLASSIFIER.total_negatives.to_f-COMPARISON.total_negatives.to_f).abs/COMPARISON.total_negatives.to_f
+  z = (CLASSIFIER.total_neutrals.to_f-COMPARISON.total_neutrals.to_f).abs/COMPARISON.total_neutrals.to_f
+  puts "Classifictaion Complete with #{(x*y*z).round(3) * 100} % error"
+  puts "Or #{1-(x*y*z).round(3) * 100} %accuracy"
 
 
 end #end of Bayes module
