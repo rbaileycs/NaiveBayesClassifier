@@ -124,6 +124,7 @@ module Bayes
 
       if @training_model[str][0] == nil
         @training_model[str][0] = 0
+        puts @training_model[str][0]
         puts "WORD: #{@training_model[str][0] = 0}"
       end
 
@@ -143,17 +144,17 @@ module Bayes
   # Main logic goes here
   CLASSIFIER = Classifier.new
   CLASSIFIER.initialize_attributes
-  CLASSIFIER.training_parse('training.csv')
-  CLASSIFIER.classy_parse('testdata.csv')
+  CLASSIFIER.training_parse('training14.csv')
+  CLASSIFIER.classy_parse('testing14.csv')
   COMPARISON = Classifier.new
   COMPARISON.initialize_attributes
-  COMPARISON.training_parse('testdata.csv')
-  COMPARISON.classy_parse('testdata.csv')
+  COMPARISON.training_parse('training14.csv')
+  COMPARISON.classy_parse('training14.csv')
   x = (CLASSIFIER.total_positives.to_f-COMPARISON.total_positives.to_f).abs/COMPARISON.total_positives.to_f
   y = (CLASSIFIER.total_negatives.to_f-COMPARISON.total_negatives.to_f).abs/COMPARISON.total_negatives.to_f
   z = (CLASSIFIER.total_neutrals.to_f-COMPARISON.total_neutrals.to_f).abs/COMPARISON.total_neutrals.to_f
-  puts "Classifictaion Complete with #{(x*y*z).round(3) * 100} % error"
-  puts "Or #{1-(x*y*z).round(3) * 100} %accuracy"
+  puts "Classifictaion Complete with #{(x*y*z).round(3) * 100}% error"
+  puts "Or #{100-(x*y*z).round(3) * 100}% accuracy"
 
 
 end #end of Bayes module
